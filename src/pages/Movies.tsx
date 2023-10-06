@@ -1,36 +1,21 @@
-import { useEffect, useState } from "react"
 import { Movie } from "../types/Movie";
-import axios from "axios";
+import { useFetch } from "../hooks/useFetch";
+import { useState } from "react";
 
 function Movies() {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const { data: movies, isFetching } = useFetch<Movie[]>('/trending/movie/day?language=pt-BR');
   const [current, setCurrent] = useState(0);
 
-  useEffect(() => {
-    async function loadMovies() {
-      const url = 'https://api.themoviedb.org/3/trending/movie/day?language=pt-BR'
-      const response = await axios.get(
-        url,
-        {
-          headers: {
-            "Authorization": `Bearer ${import.meta.env.VITE_MOVIEDB_JWT_TOKEN}`,
-            "accept": "application/json"
-          }
-        }
-      )
-
-      setMovies(response.data.results);
-    }
-
-    loadMovies()
-  }, [])
+  if (isFetching) {
+    return <h1>Carregando a lista de filmes...</h1>
+  }
 
   return (
     <div>
-      <h1>Lista filmes e séries</h1>
+      <h1>Lista filmes</h1>
       <button onClick={() => setCurrent(current - 1)}>{"<"}</button>
       <button onClick={() => setCurrent(current + 1)}>{">"}</button>
-      {movies.map((movie, index) => (
+      {movies?.map((movie, index) => (
         <div key={movie.id} style={{
           display: index === current ? 'block' : 'none'
         }}>
