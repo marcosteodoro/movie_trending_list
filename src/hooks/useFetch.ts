@@ -1,13 +1,6 @@
-import axios, { AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig } from "axios";
 import { useEffect, useState } from "react";
-
-const api = axios.create({
-    baseURL: 'https://api.themoviedb.org/3',
-    headers: {
-        "Authorization": `Bearer ${import.meta.env.VITE_MOVIEDB_JWT_TOKEN}`,
-        "accept": "application/json"
-    }
-})
+import api from "../services/api";
 
 export function useFetch<T = unknown>(url: string, options?: AxiosRequestConfig) {
     const [data, setData] = useState<T | null>(null);

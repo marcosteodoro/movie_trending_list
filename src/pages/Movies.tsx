@@ -1,9 +1,15 @@
 import { Movie } from "../types/Movie";
-import { useFetch } from "../hooks/useFetch";
 import { useState } from "react";
+import { useQuery } from "react-query";
+import api from "../services/api";
 
 function Movies() {
-  const { data: movies, isFetching } = useFetch<Movie[]>('/trending/movie/day?language=pt-BR');
+  const { data: movies, isFetching } = useQuery<Movie[]>('movie', async () => {
+    const response = await api.get('/trending/movie/day?language=pt-BR');
+    return response.data.results;
+  }, {
+    staleTime: 1000 * 60 // 1 minuto
+  })
   const [current, setCurrent] = useState(0);
 
   if (isFetching) {

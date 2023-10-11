@@ -1,9 +1,16 @@
 import { useState } from "react"
 import { TvShow } from "../types/TvShow";
-import { useFetch } from "../hooks/useFetch";
+import { useQuery } from "react-query";
+import api from "../services/api";
 
 function TvShows() {
-  const { data: tvShows, isFetching } = useFetch<TvShow[]>('/trending/tv/day?language=pt-BR');
+  const { data: tvShows, isFetching } = useQuery<TvShow[]>('tvShows', async () => {
+    const response = await api.get('/trending/tv/day?language=pt-BR');
+    return response.data.results;
+  }, {
+    staleTime: 1000 * 60, // 1 minuto
+    refetchOnWindowFocus: "always",
+  })
   const [current, setCurrent] = useState(0);
 
   if (isFetching) {
@@ -23,7 +30,7 @@ function TvShows() {
             <h2>{tvShow.name}</h2>
             <p>{tvShow.overview}</p>
         </div>
-      ))}
+    ))}
     </div>
   )
 }
